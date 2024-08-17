@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <form>
+            <input type="text" id="title"/>
+            <input type="text" id="description"/>
+        </form>
+        <button onclick="updateHabitListDisplay()">Print Habit List</button>
+        <h1>Habit List:</h1>
+        <ul class = "habitList" id="defaultHL">
+
+        </ul>
+        <script src = "js/habittry.js"></script>
+        <script>
+            const allHabitLists = document.getElementsByClassName("habitList");
+            const defaultHL = document.getElementById("defaultHL");
+            function updateHabitListDisplay(){
+                clearHabitListDisplay();
+                const habitList = sophia.habits;
+                for (habit of habitList){
+                    console.log(habit);
+                    const listItem = document.createElement("li");
+                    listItem.innerText = habit.title;
+                    defaultHL.appendChild(listItem);
+                }
+            }
+            function clearHabitListDisplay(){
+                while(defaultHL.firstChild){
+                    defaultHL.removeChild(defaultHL.firstChild);
+                }
+            }
+        </script>
+    </body>
+</html>
