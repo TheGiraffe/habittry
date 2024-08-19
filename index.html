@@ -1,37 +1,256 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/styles.css" />
     </head>
-    <body>
-        <form>
-            <input type="text" id="title"/>
-            <input type="text" id="description"/>
-        </form>
-        <button onclick="updateHabitListDisplay()">Print Habit List</button>
-        <h1>Habit List:</h1>
-        <ul class = "habitList" id="defaultHL">
+    <body onload="updateHabitListDisplay('today')">
+        
+        <!-- Add Habit Modal -->
+        <div class = "modal fade" id="addHabitModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">Add Habit</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <form id="addhabitForm" onsubmit="checkHabitSubmission(event)">
+                                <div class = "form-group">
+                                    <label for="habit-title">Habit Title</label>
+                                    <input type="text" class="form-control" name="habit-title" id="habit-title" required/>
+                                    <label for="habit-description">Habit Description</label>
+                                    <textarea name="habit-description" class="form-control" id="habit-description" rows="4" cols="50" required></textarea>
+                                </div>
+                                <fieldset>
+                                    <legend>Habit Frequency:</legend>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Mon" name="frequency" value="Mon"/>
+                                        <label class="form-check-label" for="freq_Mon">Monday</label>
+                                    </div>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Tue" name="frequency" value="Tue"/>
+                                        <label class="form-check-label" for="freq_Tue">Tuesday</label>
+                                    </div>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Wed" name="frequency" value="Wed"/>
+                                        <label class="form-check-label" for="freq_Wed">Wednesday</label>
+                                    </div>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Thu" name="frequency" value="Thu"/>
+                                        <label class="form-check-label" for="freq_Thu">Thursday</label>
+                                    </div>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Fri" name="frequency" value="Fri"/>
+                                        <label class="form-check-label" for="freq_Fri">Friday</label>
+                                    </div>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Sat" name="frequency" value="Sat"/>
+                                        <label class="form-check-label" for="freq_Sat">Saturday</label>
+                                    </div>
+                                    <div class="form-check form-check-inline form-switch">
+                                        <input class="form-check-input habit-frequency" type="checkbox" id="freq_Sun" name="frequency" value="Sun"/>
+                                        <label class="form-check-label" for="freq_Sun">Sunday</label>
+                                    </div>
+                                </fieldset>
+                                <div class="form-group">
+                                    <label for="habit-reminder-time">Reminder Time: </label>
+                                    <input type="time" id="form-control habit-reminder-time" name="habit-reminder-time" required/>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-habittry" data-bs-dismiss="modal">Create Habit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        </ul>
+        <header class="container-fluid habittryHeader">
+            <h1 id="habittryh1"><span class="logo">Habittry</span><span id="of">-of-</span><span class="nameHabittry" id="byLogo"></span></h1>
+            <button type="button" class="btn btn-primary btn-habittry" data-bs-toggle="modal" data-bs-target="#addHabitModal">New Habit</button>
+            <button type="button" class="btn btn-primary btn-habittry" data-bs-toggle="modal" data-bs-target="#addHabitModal">Archived</button>
+            <button type="button" class="btn btn-primary btn-habittry" data-bs-toggle="modal" data-bs-target="#addHabitModal">Settings</button>
+            <button type="button" class="btn btn-primary btn-habittry" data-bs-toggle="modal" data-bs-target="#addHabitModal">Theme</button>
+        </header>
+
+        <main class="container-fluid">
+            <div class="data-container" id="progressContainer">
+                <h4><span class="nameHabittry"></span>Progress</h4>
+            </div>
+            <div class="data-container" id="habitListContainer">
+                <div class="container-header-flex">
+                    <h2><span class="nameHabittry"></span><span id="todayListTitle">Today List:</span></h2>
+                    <button class="btn btn-primary btn-habittry btn-habittry-small" onclick="updateHabitListDisplay('week')" id="weekListButton">My Weekly List</button>
+                    <button class="btn btn-primary btn-habittry btn-habittry-small">Edit Habits</button>
+                </div>
+                <div class = "habitList" id="defaultHL"></div>
+            </div>
+            <div class="data-container" id="goalsContainer">
+                <h4><span class="nameHabittry"></span>Goals</h4>
+                <h4><span class="nameHabittry"></span>Done List</h4>
+            </div>
+        </main>
+         
         <script src = "js/habittry.js"></script>
         <script>
             const allHabitLists = document.getElementsByClassName("habitList");
             const defaultHL = document.getElementById("defaultHL");
-            function updateHabitListDisplay(){
+            const headerName = document.getElementsByClassName("nameHabittry");
+            for (element of headerName){
+                if (element.id === "byLogo"){
+                    element.innerText = `${sophia.name} `;
+                }else{
+                    element.innerText = `${sophia.nickname}'s `;
+                }
+            }
+
+            document.title = `${sophia.nickname}'s Habittry`;
+
+            let dayView;
+            const todayListTitle = document.getElementById("todayListTitle");
+            const weekListButton = document.getElementById("weekListButton");
+
+            function updateHabitListDisplay(timeframe){
                 clearHabitListDisplay();
                 const habitList = sophia.habits;
-                for (habit of habitList){
-                    console.log(habit);
-                    const listItem = document.createElement("li");
-                    listItem.innerText = habit.title;
-                    defaultHL.appendChild(listItem);
+                let selectedHabitList = [];
+                let dateNow = Date.now();
+                var today = new Date(dateNow);
+                today = JSdaysLayout[today.getDay()];
+
+                switch(timeframe){
+                    case "week":
+                        if (dayView === true){
+                            selectedHabitList = habitList;
+                            todayListTitle.innerText = "Weekly List:";
+                            weekListButton.innerText = "My Today List";
+                            dayView = false;
+                        }else{
+                            selectedHabitList = getThisDaysList(today, habitList);
+                            todayListTitle.innerText = "Today List:";
+                            weekListButton.innerText = "My Weekly List";
+                            dayView = true;
+                        }
+                        break;
+                    case "today":
+                        selectedHabitList = getThisDaysList(today, habitList);
+                        todayListTitle.innerText = "Today List:";
+                        weekListButton.innerText = "My Weekly List";
+                        dayView = true;
+                        break;
+                    default:
+                        selectedHabitList = habitList;
+                        break;
                 }
+                
+                for (habit of selectedHabitList){
+
+                    const listItemContainer = document.createElement("div");
+                    listItemContainer.classList.add("habitListItem");
+
+                    const buttonsColumn = document.createElement("div");
+                    buttonsColumn.classList.add("liBtnsCol");
+
+                    const checkOffButton = document.createElement("button");
+                    checkOffButton.classList.add("btn");
+                    checkOffButton.classList.add("btn-primary");
+                    checkOffButton.classList.add("btn-habittry");
+                    checkOffButton.classList.add("btn-habittry-small");
+                    checkOffButton.classList.add("btn-habittry-mark-done");
+                    checkOffButton.innerHTML = "Mark<br>Done!"
+                    buttonsColumn.appendChild(checkOffButton);
+
+                    listItemContainer.appendChild(buttonsColumn);
+
+                    const listItemContent = document.createElement("div");
+                    listItemContent.classList.add("liContCol");
+
+                    const listItemHeader = document.createElement("span");
+                    listItemHeader.classList.add("listItemHeader");
+                    const itemTitle = document.createElement("h5");
+                    itemTitle.innerText = habit.title;
+                    listItemHeader.appendChild(itemTitle);
+
+                    const listItemDetails = document.createElement("ul");
+                    const itemFreq = document.createElement("li");
+                    const trueDays = [];
+                    for (i in habit.frequency){
+                        if (habit.frequency[i] === 1){
+                            trueDays.push(habit.dayLayout[i]);
+                        }
+                    }
+                    itemFreq.innerText = "- on "+trueDays.join(", ");
+                    listItemDetails.appendChild(itemFreq);
+
+                    const itemRemind = document.createElement("li");
+                    itemRemind.innerText = "- remind me at " + habit.reminderTime;
+                    listItemDetails.appendChild(itemRemind);
+
+
+                    listItemHeader.appendChild(listItemDetails);
+                    listItemContent.appendChild(listItemHeader);
+
+                    const itemDesc = document.createElement("p");
+                    itemDesc.innerText = habit.description;
+                    listItemContent.appendChild(itemDesc);
+
+                    listItemContainer.appendChild(listItemContent);
+                    const firstElement = defaultHL.firstElementChild;
+                    defaultHL.insertBefore(listItemContainer, firstElement);
+                }
+            }
+
+            function getThisDaysList(day, habitList){
+                const selectedHabitList = [];
+                for (habit of habitList){
+                    const trueDays = [];
+                    for (i in habit.frequency){
+                        if (habit.frequency[i] === 1){
+                            trueDays.push(habit.dayLayout[i]);
+                        }
+                    }
+                    if (trueDays.includes(day)){
+                        selectedHabitList.push(habit);
+                    }
+                }
+                return selectedHabitList;
             }
             function clearHabitListDisplay(){
                 while(defaultHL.firstChild){
                     defaultHL.removeChild(defaultHL.firstChild);
                 }
             }
+
+            function checkHabitSubmission(){
+                event.preventDefault();
+                const habitForm = event.currentTarget;
+                try{
+                    const habitTitle = document.getElementById("habit-title").value;
+                    const habitDescription = document.getElementById("habit-description").value;
+                    const habitReminderTime = document.getElementById("habit-reminder-time").value;
+                    const freqCheckboxes = document.getElementsByClassName("habit-frequency");
+                    const habitFrequency = [];
+                    const habitDayLayout = [];
+                    console.log(habitTitle);
+                    for (checkbox of freqCheckboxes){
+                        const day = checkbox.value;
+                        const checked = Number(checkbox.checked);
+                        habitDayLayout.push(day);
+                        habitFrequency.push(checked);
+                    }
+
+                    sophia.createHabit(habitTitle, habitDescription, habitFrequency, habitReminderTime, habitDayLayout,);
+                    updateHabitListDisplay()
+                    habitForm.reset();
+
+                }catch(error){
+                    console.error("There was an error:", error);
+                }
+            }
         </script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     </body>
 </html>

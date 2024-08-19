@@ -1,7 +1,7 @@
 const JSdaysLayout = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]; // How days of the week work in JS.
 
 class Habit{
-    constructor(id, title, description, frequency, reminderTime, status, finite, startDate, streakLayout){
+    constructor(id, title, description, frequency, reminderTime, dayLayout, status, finite, startDate){
         this.id = id; // Id number is passed over from the user side, based on how many habits the user has already created.
         this.now = Date.now();
         this.created = new Date(this.now);
@@ -19,7 +19,8 @@ class Habit{
         
         // Initial states for when the object is created:
         this.doneToday = false;
-        this.streakLog = [streakLayout, [0,0,0,0,0,0,0]];
+        this.dayLayout = dayLayout;
+        this.streakLog = [dayLayout, [0,0,0,0,0,0,0]];
         this.streak = 0;
         this.count = 0;
         this.freeze = false; // Future functionality, might get lumped into status instead.
@@ -30,8 +31,8 @@ class Habit{
         this.count += 1;
         const dayIndex = timeStamp.getDay();
         const dayOfWeek = JSdaysLayout[dayIndex];
-        const streakLayoutIndex = this.streakLog[0].indexOf(dayOfWeek);
-        this.streakLog[1][streakLayoutIndex] = 1;
+        const dayLayoutIndex = this.streakLog[0].indexOf(dayOfWeek);
+        this.streakLog[1][dayLayoutIndex] = 1;
         return true;
     }
     uncheckToday(timeStamp){
@@ -40,8 +41,8 @@ class Habit{
         this.count -= 1;
         const dayIndex = timeStamp.getDay();
         const dayOfWeek = JSdaysLayout[dayIndex];
-        const streakLayoutIndex = this.streakLog[0].indexOf(dayOfWeek);
-        this.streakLog[1][streakLayoutIndex] = 0;
+        const dayLayoutIndex = this.streakLog[0].indexOf(dayOfWeek);
+        this.streakLog[1][dayLayoutIndex] = 0;
         return true;
     }
     deleteData(){
@@ -51,10 +52,11 @@ class Habit{
 }
 
 class User{
-    constructor(id, username, name, email){
+    constructor(id, username, name, nickname, email){
         this.id = id;
         this.username = username;
         this.name = name;
+        this.nickname = nickname;
         this.email = email;
         this.now = Date.now();
         this.joinDate = new Date(this.now);
@@ -65,9 +67,9 @@ class User{
         console.log(`New user ${this.username} added. Name: ${this.name}, Email: ${this.email}.`);
         return userCount;
     }
-    createHabit(title, description, frequency, reminderTime, status = "active", finite = [false, 0, 0, false], startDate = new Date(Date.now()), streakLayout = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]){
+    createHabit(title, description, frequency, reminderTime, dayLayout = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], status = "active", finite = [false, 0, 0, false], startDate = new Date(Date.now())){
         const id = this.habitIdCount + 1;
-        const habit = new Habit(id, title, description, frequency, reminderTime, status, finite, startDate, streakLayout);
+        const habit = new Habit(id, title, description, frequency, reminderTime, dayLayout, status, finite, startDate, dayLayout);
         this.habits.push(habit);
         this.habitIdCount++;
         return habit;
@@ -123,7 +125,7 @@ var users = [];
 var userCount = 0;
 var id = userCount + 1;
 console.log(`User count is ${userCount}`);
-const sophia = new User(id, "sophia", "Sophia D", "TheGiraffe@users.noreply.github.com");
+const sophia = new User(id, "sophia", "Sophia D", "Sophie", "TheGiraffe@users.noreply.github.com");
 console.log(`User count is ${userCount}`);
 sophia.createHabit("Offline at 9","Turn phone off at 9 pm every night",[1,1,1,1,1,1,1],"20:00");
 sophia.createHabit("Duolingo Latin","Complete at least 1 Duolingo Latin lesson every day",[1,1,1,1,1,1,1],"20:00");
