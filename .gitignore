@@ -1,5 +1,6 @@
 node_modules
 dist
+data
 .parcel-cache
 .firebase
 .env
