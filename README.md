@@ -1,6 +1,8 @@
 # habittry
 A habit tracking app for people like me who have goldfish brain.
 
+# New plan is to turn this into a flutter app, based on my original ideas!
+
 ## Current Progress Screenshots: After 18 August 2024:
 As of 0:00 on August 19, here is what the web application looks like:
 

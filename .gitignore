@@ -4,3 +4,4 @@ data
 .parcel-cache
 .firebase
 .env
+.DS_STORE
