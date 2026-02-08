@@ -1,5 +1,7 @@
 # habittry
 
+- [Using Firebase and Flutter together](https://firebase.google.com/docs/flutter/setup?platform=web)
+
 A new Flutter project.
 
 ## Getting Started

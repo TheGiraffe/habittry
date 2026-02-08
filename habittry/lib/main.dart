@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -11,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const String user = "User";
-    
+
     return MaterialApp(
       title: 'Habittry',
       theme: ThemeData(
@@ -30,7 +34,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: Colors.pink),
       ),
       home: const MyHomePage(title: user + "'s habittry"),
     );
@@ -111,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            CreateHabitForm(),
           ],
         ),
       ),
@@ -118,6 +123,146 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class CreateHabitForm extends StatefulWidget {
+  const CreateHabitForm({super.key});
+  @override
+  State<CreateHabitForm> createState() => _CreateHabitFormState();
+}
+
+class _CreateHabitFormState extends State<CreateHabitForm> {
+  String _habitName = "";
+  String? _habitFrequency;
+  int? _habitFrequencyNum;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Container(
+        padding: EdgeInsets.all(20),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Text(
+              'New Habit: $_habitName',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: "Habit Title"),
+              onChanged: (String? value) {
+                _habitName = '$value';
+              },
+            ),
+            DropdownButtonFormField(
+              decoration: InputDecoration(labelText: "Select Habit Frequency"),
+              onChanged: (value) {
+                setState(() {
+                  _habitFrequency = '$value';
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Please select a frequency';
+                }
+                return null;
+              },
+              initialValue: _habitFrequency,
+              items: ['Daily', 'Weekly', 'Monthly']
+                  .map(
+                    (option) =>
+                        DropdownMenuItem(value: option, child: Text(option)),
+                  )
+                  .toList(),
+            ),
+            _habitFrequency == 'Daily'
+                ? DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      labelText: "How Many Times Per Day?",
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _habitFrequencyNum = int.parse('$value');
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a daily frequency';
+                      }
+                      return null;
+                    },
+                    initialValue: _habitFrequencyNum,
+                    items: [1, 2, 3]
+                        .map(
+                          (option) => DropdownMenuItem(
+                            value: option,
+                            child: Text('$option'),
+                          ),
+                        )
+                        .toList(),
+                  )
+                : Container(),
+            _habitFrequency == 'Weekly'
+                ? DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      labelText: "How Many Times Per Week?",
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _habitFrequencyNum = int.parse('$value');
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a weekly frequency';
+                      }
+                      return null;
+                    },
+                    initialValue: _habitFrequencyNum,
+                    items: [1, 2, 3, 4, 5, 6, 7]
+                        .map(
+                          (option) => DropdownMenuItem(
+                            value: option,
+                            child: Text('$option'),
+                          ),
+                        )
+                        .toList(),
+                  )
+                : Container(),
+            _habitFrequency == 'Monthly'
+                ? DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      labelText: "How Many Times Per Month?",
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _habitFrequencyNum = int.parse('$value');
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a monthly frequency';
+                      }
+                      return null;
+                    },
+                    initialValue: _habitFrequencyNum,
+                    items: [1, 2, 3, 4, 5]
+                        .map(
+                          (option) => DropdownMenuItem(
+                            value: option,
+                            child: Text('$option'),
+                          ),
+                        )
+                        .toList(),
+                  )
+                : Container(),
+          ],
+        ),
       ),
     );
   }
